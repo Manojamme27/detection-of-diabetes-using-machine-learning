@@ -10,12 +10,9 @@ from sklearn.metrics import roc_curve, auc
 
 
 
-st.markdown(
-    """
-    <meta name="google-site-verification" content="koV22X7Xggq36L5spInQeWoIQkqb5cpX0TBtT6UWHO8" />
-    """,
-    unsafe_allow_html=True
-)
+st.components.v1.html("""
+<meta name="google-site-verification" content="koV22X7Xggq36L5spInQeWoIQkqb5cpX0TBtT6UWHO8" />
+""", height=0)
 # -------------------------------
 # LOAD DATA & MODEL
 # -------------------------------
