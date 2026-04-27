@@ -1,172 +1,194 @@
 import streamlit as st
 import pandas as pd
-from PIL import Image
 import numpy as np
 import matplotlib.pyplot as plt
-import plotly.figure_factory as ff
-from sklearn.metrics import accuracy_score
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import train_test_split
 import seaborn as sns
+import pickle
 
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import roc_curve, auc
 
+# -------------------------------
+# LOAD DATA & MODEL
+# -------------------------------
 
-df = pd.read_csv('/Users/manojamme/Desktop/MINOR/images/diabetes.csv')
+@st.cache_data
+def load_data():
+    return pd.read_csv('data/diabetes.csv')
 
-# HEADINGS
-st.title('Diabetes Checkup')
-st.sidebar.header('Patient Data')
-st.subheader('Training Data Stats')
-st.write(df.describe())
+@st.cache_resource
+def load_model():
+    return pickle.load(open('model/model.pkl', 'rb'))
 
+df = load_data()
+rf_model = load_model()
 
-# X AND Y DATA
-x = df.drop(['Outcome'], axis = 1)
-y = df.iloc[:, -1]
-x_train, x_test, y_train, y_test = train_test_split(x,y, test_size = 0.2, random_state = 0)
+# Train logistic regression for comparison
+@st.cache_resource
+def train_logistic():
+    X = df.drop('Outcome', axis=1)
+    y = df['Outcome']
+    model = LogisticRegression(max_iter=1000)
+    model.fit(X, y)
+    return model
 
+lr_model = train_logistic()
 
-# FUNCTION
-def user_report():
-  pregnancies = st.sidebar.slider('Pregnancies', 0,17, 3 )
-  glucose = st.sidebar.slider('Glucose', 0,200, 120 )
-  bp = st.sidebar.slider('BloodPressure', 0,122, 70 )
-  skinthickness = st.sidebar.slider('SkinThickness', 0,100, 20 )
-  insulin = st.sidebar.slider('Insulin', 0,846, 79 )
-  bmi = st.sidebar.slider('BMI', 0,67, 20 )
-  dpf = st.sidebar.slider('DiabetesPedigreeFunction', 0.0,2.4, 0.47 )
-  age = st.sidebar.slider('Age', 21,88, 33 )
+# -------------------------------
+# PAGE CONFIG
+# -------------------------------
 
-  user_report_data = {
-      'Pregnancies':pregnancies,
-      'Glucose':glucose,
-      'BloodPressure':bp,
-      'SkinThickness':skinthickness,
-      'Insulin':insulin,
-      'BMI':bmi,
-      'DiabetesPedigreeFunction':dpf,
-      'Age':age
-  }
-  report_data = pd.DataFrame(user_report_data, index=[0])
-  return report_data
+st.set_page_config(page_title="Diabetes AI Dashboard", layout="wide")
 
+st.markdown("""
+<h1 style='text-align: center; color: #4CAF50;'>🧠 Diabetes AI Dashboard</h1>
+""", unsafe_allow_html=True)
 
+st.markdown("---")
 
+# -------------------------------
+# USER INPUT
+# -------------------------------
 
-# PATIENT DATA
-user_data = user_report()
-st.subheader('Patient Data')
-st.write(user_data)
+st.sidebar.header("🧾 Patient Input")
 
+def user_input():
+    return pd.DataFrame({
+        'Pregnancies': [st.sidebar.slider('Pregnancies', 0, 17, 3)],
+        'Glucose': [st.sidebar.slider('Glucose', 0, 200, 120)],
+        'BloodPressure': [st.sidebar.slider('Blood Pressure', 0, 122, 70)],
+        'SkinThickness': [st.sidebar.slider('Skin Thickness', 0, 100, 20)],
+        'Insulin': [st.sidebar.slider('Insulin', 0, 846, 79)],
+        'BMI': [st.sidebar.slider('BMI', 0.0, 67.0, 20.0)],
+        'DiabetesPedigreeFunction': [st.sidebar.slider('DPF', 0.0, 2.4, 0.47)],
+        'Age': [st.sidebar.slider('Age', 21, 88, 33)]
+    })
 
+user_data = user_input()
 
+# -------------------------------
+# PREDICTIONS
+# -------------------------------
 
-# MODEL
-rf  = RandomForestClassifier()
-rf.fit(x_train, y_train)
-user_result = rf.predict(user_data)
+rf_pred = rf_model.predict(user_data)[0]
+lr_pred = lr_model.predict(user_data)[0]
 
+# -------------------------------
+# MAIN DISPLAY
+# -------------------------------
 
+col1, col2 = st.columns(2)
 
-# VISUALISATIONS
-st.title('Visualised Patient Report')
+with col1:
+    st.subheader("🧾 Patient Data")
+    st.write(user_data)
 
+with col2:
+    st.subheader("🧠 Prediction Results")
 
+    st.write("**Random Forest:**")
+    st.success("Low Risk") if rf_pred == 0 else st.error("High Risk")
 
-# COLOR FUNCTION
-if user_result[0]==0:
-  color = 'blue'
-else:
-  color = 'red'
+    st.write("**Logistic Regression:**")
+    st.success("Low Risk") if lr_pred == 0 else st.error("High Risk")
 
+# -------------------------------
+# METRICS
+# -------------------------------
 
-# Age vs Pregnancies
-st.header('Pregnancy count Graph (Others vs Yours)')
-fig_preg = plt.figure()
-ax1 = sns.scatterplot(x = 'Age', y = 'Pregnancies', data = df, hue = 'Outcome', palette = 'Greens')
-ax2 = sns.scatterplot(x = user_data['Age'], y = user_data['Pregnancies'], s = 150, color = color)
-plt.xticks(np.arange(10,100,5))
-plt.yticks(np.arange(0,20,2))
-plt.title('0 - Healthy & 1 - Unhealthy')
-st.pyplot(fig_preg)
+st.markdown("### 📈 Key Metrics")
 
+m1, m2, m3 = st.columns(3)
+m1.metric("Glucose", int(user_data["Glucose"]))
+m2.metric("BMI", float(user_data["BMI"]))
+m3.metric("Age", int(user_data["Age"]))
 
+# -------------------------------
+# FEATURE IMPORTANCE (RF)
+# -------------------------------
 
-# Age vs Glucose
-st.header('Glucose Value Graph (Others vs Yours)')
-fig_glucose = plt.figure()
-ax3 = sns.scatterplot(x = 'Age', y = 'Glucose', data = df, hue = 'Outcome' , palette='magma')
-ax4 = sns.scatterplot(x = user_data['Age'], y = user_data['Glucose'], s = 150, color = color)
-plt.xticks(np.arange(10,100,5))
-plt.yticks(np.arange(0,220,10))
-plt.title('0 - Healthy & 1 - Unhealthy')
-st.pyplot(fig_glucose)
+st.markdown("## 📊 Feature Importance (Random Forest)")
 
+importances = rf_model.feature_importances_
+features = df.drop('Outcome', axis=1).columns
 
+imp_df = pd.DataFrame({
+    'Feature': features,
+    'Importance': importances
+}).sort_values(by='Importance', ascending=False)
 
-# Age vs Bp
-st.header('Blood Pressure Value Graph (Others vs Yours)')
-fig_bp = plt.figure()
-ax5 = sns.scatterplot(x = 'Age', y = 'BloodPressure', data = df, hue = 'Outcome', palette='Reds')
-ax6 = sns.scatterplot(x = user_data['Age'], y = user_data['BloodPressure'], s = 150, color = color)
-plt.xticks(np.arange(10,100,5))
-plt.yticks(np.arange(0,130,10))
-plt.title('0 - Healthy & 1 - Unhealthy')
-st.pyplot(fig_bp)
+fig = plt.figure()
+sns.barplot(x='Importance', y='Feature', data=imp_df)
+st.pyplot(fig)
 
+# -------------------------------
+# ROC CURVE
+# -------------------------------
 
-# Age vs St
-st.header('Skin Thickness Value Graph (Others vs Yours)')
-fig_st = plt.figure()
-ax7 = sns.scatterplot(x = 'Age', y = 'SkinThickness', data = df, hue = 'Outcome', palette='Blues')
-ax8 = sns.scatterplot(x = user_data['Age'], y = user_data['SkinThickness'], s = 150, color = color)
-plt.xticks(np.arange(10,100,5))
-plt.yticks(np.arange(0,110,10))
-plt.title('0 - Healthy & 1 - Unhealthy')
-st.pyplot(fig_st)
+st.markdown("## 📉 ROC Curve Comparison")
 
+X = df.drop('Outcome', axis=1)
+y = df['Outcome']
 
-# Age vs Insulin
-st.header('Insulin Value Graph (Others vs Yours)')
-fig_i = plt.figure()
-ax9 = sns.scatterplot(x = 'Age', y = 'Insulin', data = df, hue = 'Outcome', palette='rocket')
-ax10 = sns.scatterplot(x = user_data['Age'], y = user_data['Insulin'], s = 150, color = color)
-plt.xticks(np.arange(10,100,5))
-plt.yticks(np.arange(0,900,50))
-plt.title('0 - Healthy & 1 - Unhealthy')
-st.pyplot(fig_i)
+rf_probs = rf_model.predict_proba(X)[:,1]
+lr_probs = lr_model.predict_proba(X)[:,1]
 
+rf_fpr, rf_tpr, _ = roc_curve(y, rf_probs)
+lr_fpr, lr_tpr, _ = roc_curve(y, lr_probs)
 
-# Age vs BMI
-st.header('BMI Value Graph (Others vs Yours)')
-fig_bmi = plt.figure()
-ax11 = sns.scatterplot(x = 'Age', y = 'BMI', data = df, hue = 'Outcome', palette='rainbow')
-ax12 = sns.scatterplot(x = user_data['Age'], y = user_data['BMI'], s = 150, color = color)
-plt.xticks(np.arange(10,100,5))
-plt.yticks(np.arange(0,70,5))
-plt.title('0 - Healthy & 1 - Unhealthy')
-st.pyplot(fig_bmi)
+rf_auc = auc(rf_fpr, rf_tpr)
+lr_auc = auc(lr_fpr, lr_tpr)
 
+fig2 = plt.figure()
+plt.plot(rf_fpr, rf_tpr, label=f"Random Forest (AUC={rf_auc:.2f})")
+plt.plot(lr_fpr, lr_tpr, label=f"Logistic (AUC={lr_auc:.2f})")
+plt.plot([0,1], [0,1], linestyle='--')
+plt.xlabel("False Positive Rate")
+plt.ylabel("True Positive Rate")
+plt.legend()
+st.pyplot(fig2)
 
-# Age vs Dpf
-st.header('DPF Value Graph (Others vs Yours)')
-fig_dpf = plt.figure()
-ax13 = sns.scatterplot(x = 'Age', y = 'DiabetesPedigreeFunction', data = df, hue = 'Outcome', palette='YlOrBr')
-ax14 = sns.scatterplot(x = user_data['Age'], y = user_data['DiabetesPedigreeFunction'], s = 150, color = color)
-plt.xticks(np.arange(10,100,5))
-plt.yticks(np.arange(0,3,0.2))
-plt.title('0 - Healthy & 1 - Unhealthy')
-st.pyplot(fig_dpf)
+# -------------------------------
+# VISUALIZATION
+# -------------------------------
 
+st.markdown("## 📊 Patient vs Population")
 
+def plot(feature):
+    fig = plt.figure()
+    sns.scatterplot(x='Age', y=feature, data=df, hue='Outcome')
+    sns.scatterplot(
+        x=user_data['Age'],
+        y=user_data[feature],
+        s=200,
+        color='red' if rf_pred else 'blue'
+    )
+    st.pyplot(fig)
 
-# OUTPUT
-st.subheader('Your Report: ')
-output=''
-if user_result[0]==0:
-  output = 'You are not Diabetic'
-else:
-  output = 'You are Diabetic'
-st.title(output)
-st.subheader('Accuracy: ')
-st.write(str(accuracy_score(y_test, rf.predict(x_test))*100)+'%')
+for f in ['Glucose', 'BMI', 'Insulin']:
+    st.subheader(f"{f} vs Age")
+    plot(f)
+
+# -------------------------------
+# DOWNLOAD REPORT
+# -------------------------------
+
+st.markdown("## 📄 Download Report")
+
+report = user_data.copy()
+report["RF_Prediction"] = rf_pred
+report["LR_Prediction"] = lr_pred
+
+st.download_button(
+    label="Download Report (CSV)",
+    data=report.to_csv(index=False),
+    file_name="diabetes_report.csv",
+    mime="text/csv"
+)
+
+# -------------------------------
+# SIDEBAR INFO
+# -------------------------------
+
+st.sidebar.markdown("## ℹ️ About")
+st.sidebar.write("ML-powered Diabetes Risk Prediction Dashboard")
