@@ -4,12 +4,17 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pickle
-
+import streamlit as st
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import roc_curve, auc
 
-st.set_page_config(
-    page_title="Diabetes Prediction App | ML Project",
+
+
+st.markdown(
+    """
+    <meta name="google-site-verification" content="koV22X7Xggq36L5spInQeWoIQkqb5cpX0TBtT6UWHO8" />
+    """,
+    unsafe_allow_html=True
 )
 # -------------------------------
 # LOAD DATA & MODEL
