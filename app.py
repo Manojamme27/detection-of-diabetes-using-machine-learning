@@ -8,6 +8,9 @@ import pickle
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import roc_curve, auc
 
+st.set_page_config(
+    page_title="Diabetes Prediction App | ML Project",
+)
 # -------------------------------
 # LOAD DATA & MODEL
 # -------------------------------
