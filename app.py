@@ -99,9 +99,11 @@ with col2:
 st.markdown("### 📈 Key Metrics")
 
 m1, m2, m3 = st.columns(3)
-m1.metric("Glucose", int(user_data["Glucose"]))
-m2.metric("BMI", float(user_data["BMI"]))
-m3.metric("Age", int(user_data["Age"]))
+user = user_data.iloc[0]
+
+m1.metric("Glucose", int(user["Glucose"]))
+m2.metric("BMI", float(user["BMI"]))
+m3.metric("Age", int(user["Age"]))
 
 # -------------------------------
 # FEATURE IMPORTANCE (RF)
