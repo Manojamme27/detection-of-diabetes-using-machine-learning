@@ -1,47 +1,84 @@
-# 🧠 Diabetes Prediction System (Machine Learning + Streamlit)
+# 🧠 Diabetes Prediction AI Dashboard
 
-🚀 A machine learning web application that predicts whether a person is likely to have diabetes based on medical input parameters. Built using a Random Forest model and deployed with an interactive Streamlit interface.
+🚀 A full-stack Machine Learning web application that predicts diabetes risk using multiple models and presents results through an interactive dashboard.
 
-🔗 **Live Demo:** https://manojamme27.github.io/detection-of-diabetes-using-machine-learning/
+🔗 **Live App:** https://your-app.streamlit.app  
 
 ---
 
-## 📌 Features
+## 📌 Overview
 
-- 🧠 Predicts diabetes using trained ML model  
-- 📊 Displays dataset statistics and insights  
-- 🖥️ Interactive UI using Streamlit  
-- ⚡ Fast predictions with optimized model  
-- 📂 Clean and simple user input interface  
+This project combines **Machine Learning + Data Visualization + Web UI** to build a real-world healthcare prediction system.
+
+Users can:
+- Input patient medical data
+- Get predictions from multiple ML models
+- Analyze feature importance
+- Visualize comparisons with real dataset
+- Download prediction reports
+
+---
+
+## ✨ Features
+
+### 🧠 Machine Learning
+- Random Forest Classifier (Primary Model)
+- Logistic Regression (Model Comparison)
+- ROC Curve & AUC Evaluation
+
+### 📊 Data Insights
+- Feature Importance visualization
+- Patient vs Population comparison graphs
+- Dataset statistical summary
+
+### 🖥️ Interactive Dashboard
+- Clean UI built with Streamlit
+- Real-time predictions
+- Key metrics display (Glucose, BMI, Age)
+- Sidebar input controls
+
+### 📄 Export
+- Download prediction report as CSV
 
 ---
 
 ## 🛠️ Tech Stack
 
-### Machine Learning
+### 🔹 Machine Learning
 - Python
-- Scikit-learn (Random Forest Classifier)
+- Scikit-learn
 
-### Data Handling & Visualization
+### 🔹 Data Processing
 - Pandas
 - NumPy
+
+### 🔹 Visualization
 - Matplotlib
 - Seaborn
 
-### Frontend / UI
+### 🔹 Frontend / UI
 - Streamlit
 
 ---
 
-## 📊 Dataset
-
-- 📁 File: `diabetes.csv`
-- Contains medical attributes like:
-  - Glucose Level  
-  - Blood Pressure  
-  - BMI  
-  - Insulin  
-  - Age  
+## 📁 Project Structure
+```bash
+detection-of-diabetes-using-machine-learning/
+│── data/
+│ └── diabetes.csv
+│
+│── model/
+│ ├── model.pkl
+│ └── train_model.py
+│
+│── utils/
+│ └── helpers.py
+│
+│── app.py
+│── requirements.txt
+│── runtime.txt
+│── README.md
+```
 
 ---
 
@@ -53,27 +90,76 @@
 git clone https://github.com/your-username/detection-of-diabetes-using-machine-learning.git
 cd detection-of-diabetes-using-machine-learning
 ```
-## 2️⃣ Create Virtual Environment
+
+## Create virtual environment
 ```bash
 python3 -m venv venv
 source venv/bin/activate   # Mac/Linux
 ```
-## 3️⃣ Install Dependencies
+## Install dependencies
 ```bash
 pip install -r requirements.txt
 ```
-## 4️⃣ Run the Application
+## Train the model
+```bash
+cd model
+python train_model.py
+cd ..
+```
+## Run the app
 ```bash
 streamlit run app.py
 ```
+## 📊 Model Details
+- Dataset: PIMA Indians Diabetes Dataset
+- Target Variable: Outcome
+- Models Used:
+  - Random Forest Classifier
+  - Logistic Regression
+- Evaluation:
+  - ROC Curve
+  - AUC Score
 ## 📷 Screenshots
-<img width="1440" height="815" alt="Screenshot 2026-04-27 at 8 08 20 PM" src="https://github.com/user-attachments/assets/2a6a9972-5a86-49be-b900-a9597f811116" />
-<img width="1440" height="815" alt="Screenshot 2026-04-27 at 8 08 52 PM" src="https://github.com/user-attachments/assets/7ebc0184-798d-4f0c-88d8-d3b028ffad48" />
-<img width="1440" height="815" alt="Screenshot 2026-04-27 at 8 08 29 PM" src="https://github.com/user-attachments/assets/8e9210eb-9955-4a98-8343-785c2929e760" />
-<img width="1440" height="815" alt="Screenshot 2026-04-27 at 8 08 37 PM" src="https://github.com/user-attachments/assets/652a670b-260c-48c1-9f7b-ddff8f2f86e6" />
-<img width="1440" height="815" alt="Screenshot 2026-04-27 at 8 09 12 PM" src="https://github.com/user-attachments/assets/a1699dcf-7eb0-4f86-8a49-9c225ecea722" />
-<img width="1440" height="815" alt="Screenshot 2026-04-27 at 8 09 05 PM" src="https://github.com/user-attachments/assets/f8dc5c64-de8a-4af7-8269-f1854a953485" />
-<img width="1440" height="815" alt="Screenshot 2026-04-27 at 8 08 46 PM" src="https://github.com/user-attachments/assets/da78bb0c-6858-44ee-9062-027ce99bcf8b" />
-<img width="1440" height="815" alt="Screenshot 2026-04-27 at 8 08 58 PM" src="https://github.com/user-attachments/assets/1f4df813-3bc2-4082-bd4b-57ac498768f7" />
-<img width="1440" height="815" alt="Screenshot 2026-04-27 at 8 09 17 PM" src="https://github.com/user-attachments/assets/e33d874d-297e-4909-8b68-3bb31836f077" />
+<img width="1440" height="815" alt="Screenshot 2026-04-27 at 11 20 23 PM" src="https://github.com/user-attachments/assets/2e445695-a490-408d-8bfd-3648d9d7a7fb" />
+<img width="1440" height="815" alt="Screenshot 2026-04-27 at 11 20 48 PM" src="https://github.com/user-attachments/assets/a6c77278-5780-4b0c-b89c-1b13c4e29a40" />
+<img width="1440" height="815" alt="Screenshot 2026-04-27 at 11 20 43 PM" src="https://github.com/user-attachments/assets/0cf050a3-8343-41a6-8cce-47e93e325c83" />
+<img width="1440" height="815" alt="Screenshot 2026-04-27 at 11 20 33 PM" src="https://github.com/user-attachments/assets/04f3ff54-2ebd-4dad-aa4a-236d82c65a1f" />
+<img width="1440" height="815" alt="Screenshot 2026-04-27 at 11 21 00 PM" src="https://github.com/user-attachments/assets/90452c2c-4a31-4852-9f2b-b85b90c9f4c3" />
+<img width="1440" height="815" alt="Screenshot 2026-04-27 at 11 21 13 PM" src="https://github.com/user-attachments/assets/559ed453-c526-4452-af58-90cb4a28bc4d" />
+<img width="1440" height="815" alt="Screenshot 2026-04-27 at 11 21 19 PM" src="https://github.com/user-attachments/assets/7468f199-08b0-433f-a137-88d5520c7dbe" />
+<img width="1440" height="815" alt="Screenshot 2026-04-27 at 11 21 25 PM" src="https://github.com/user-attachments/assets/cb7d8b23-f371-47ff-9b23-ccdbabeb11b6" />
+<img width="1440" height="815" alt="Screenshot 2026-04-27 at 11 21 06 PM" src="https://github.com/user-attachments/assets/19574218-a14a-451a-a32c-2f5b27c87c09" />
+<img width="1440" height="815" alt="Screenshot 2026-04-27 at 11 21 30 PM" src="https://github.com/user-attachments/assets/b6a37def-58e2-4105-8201-3779de0c1956" />
+
+## 🎯 Sample Prediction
+```bash
+Input:
+
+Glucose: 120
+BMI: 28
+Age: 35
+
+Output:
+➡️ Low Risk
+```
+## 💡 Why This Project?
+
+This project demonstrates:
+
+- End-to-end ML pipeline
+- Model comparison & evaluation
+- Interactive data visualization
+- Real-world deployment
+
+## 🚀 Future Improvements
+- 🔐 User authentication
+- 💳 Integration with healthcare APIs
+- 📱 Mobile optimization
+- ☁️ Scalable backend (FastAPI)
+## 📫 Contact
+- GitHub: https://github.com/Manojamme27
+- LinkedIn: https://www.linkedin.com/in/amme-manoj-4569b1228/
+## 📜 License
+
+MIT License
 
